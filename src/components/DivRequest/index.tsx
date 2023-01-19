@@ -9,10 +9,11 @@ interface InterfaceDivRequestComponent {
   parcel: number;
   checkParcel: any;
   percentage: string | number;
+  days?: string | undefined;
   limpPercentage: any;
-  handlePercetage: any;
-  checkPercetage: any;
-  limpResponse: any;
+  handlePercentage: any;
+  checkPercentage: any;
+  handleDays: any;
 }
 
 export function DivRequestComponent({
@@ -25,9 +26,10 @@ export function DivRequestComponent({
   checkParcel,
   percentage,
   limpPercentage,
-  handlePercetage,
-  checkPercetage,
-  limpResponse,
+  handlePercentage,
+  checkPercentage,
+  handleDays,
+  days,
 }: InterfaceDivRequestComponent) {
   return (
     <DivRequest>
@@ -42,6 +44,8 @@ export function DivRequestComponent({
           onClick={limpCurrency}
           onBlur={formatCurrency}
         ></InputText>
+        <p>Valor entre R$1.000,00 e R$100.000.000,00</p>
+
         <Label htmlFor="parcela">Em quantas parcelas *</Label>
         <InputText
           type={"number"}
@@ -53,14 +57,25 @@ export function DivRequestComponent({
           id="parcela"
         ></InputText>
         <p>Máximo de 12 parcelas</p>
+
         <Label htmlFor="percentual">Informe o percentual de MDR * </Label>
         <InputText
           id="percentual"
           value={percentage}
           onClick={limpPercentage}
-          onChange={handlePercetage}
-          onBlur={checkPercetage}
+          onChange={handlePercentage}
+          onBlur={checkPercentage}
         ></InputText>
+        <p>Valor entre 1% e 100%</p>
+
+        <Label htmlFor="days">Períodos para recebimento</Label>
+        <InputText
+          id="days"
+          value={days}
+          onChange={handleDays}
+          placeholder={"Exemplo: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10"}
+        ></InputText>
+        <p>Inserir no máximo 10 campos, opcional</p>
       </Form>
     </DivRequest>
   );

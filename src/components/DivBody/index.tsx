@@ -8,22 +8,16 @@ export function DivBody() {
   const [currency, setCurrency] = useState<string | number>(0);
   const [parcel, setParcel] = useState(1);
   const [percentage, setPercentage] = useState<string | number>(0);
-  const [firstDay, setFirstDay] = useState<string>("R$ 0,00");
-  const [fifTeenthDay, setFifTeenthDay] = useState<string>("R$ 0,00");
-  const [thirtiethDay, setThirtiethDay] = useState<string>("R$ 0,00");
-  const [ninetiethDay, setNinetiethDay] = useState<string>("R$ 0,00");
+  const [keys, setKeys] = useState<string[]>();
+  const [values, setValues] = useState<string[]>();
+  const [days, setDays] = useState<string>();
 
+  // useEffect: Se currency, parcel, percentage ou days sofrerem alteração a função GetResponse será executada
   useEffect(() => {
     getResponse();
-  }, [currency, parcel, percentage]);
+  }, [currency, parcel, percentage, days]);
 
-  function limpResponse() {
-    setFirstDay("R$ 0,00");
-    setFifTeenthDay("R$ 0,00");
-    setThirtiethDay("R$ 0,00");
-    setNinetiethDay("R$ 0,00");
-  }
-
+  // limpCurrency: limpa o input e passa condigurações de mínimo, máximo e tipo do input, posteriormente atualiza o valor do state currency
   function limpCurrency(e: any) {
     e.target.type = "number";
     e.target.min = 0;
@@ -32,19 +26,19 @@ export function DivBody() {
     return setCurrency(e.target.value);
   }
 
+  // handleCurrency: atualiza o state com o valor atual do input
   function handleCurrency(e: any) {
     return setCurrency(e.target.value);
   }
 
-  async function formatCurrency(e: any) {
+  // formatCurrency: checa se valores do input valor são válidos, se não forem muda o valor do input para 0, se forem formata o valor do input para a moeda BRL(Real), por fim atualiza o valor do state currency
+  function formatCurrency(e: any) {
     if (currency < 1000) {
       e.target.value = 0;
-      limpResponse();
     }
 
     if (currency > 100000000) {
       e.target.value = 0;
-      limpResponse();
     }
 
     e.target.type = "text";
@@ -56,21 +50,22 @@ export function DivBody() {
     setCurrency(valueFormat);
   }
 
+  // handleParcel: atualiza o valor do state parcel
   function handleParcel(e: any) {
     return setParcel(e.target.value);
   }
 
-  async function checkParcel(e: any) {
+  // checkParcel: verifica se o valor do input de parcela é válido, se não for atualiza o state parcel para 0
+  function checkParcel(e: any) {
     if (parcel > 12) {
       setParcel(0);
-      limpResponse();
     }
     if (parcel < 1) {
       setParcel(0);
-      limpResponse();
     }
   }
 
+  // limpPercentage: muda o tipo do input para number, passa configurações de mínimo e máximo, limpa o valor do input, por fim atualiza o state percentage
   function limpPercentage(e: any) {
     e.target.type = "number";
     e.target.min = 1;
@@ -79,24 +74,30 @@ export function DivBody() {
     return setPercentage(e.target.value);
   }
 
-  function handlePercetage(e: any) {
+  // handlePercentage: atualiza o valor do state percentage com o valor do input
+  function handlePercentage(e: any) {
     return setPercentage(e.target.value);
   }
 
-  async function checkPercetage(e: any) {
+  // checkPercentage: verifica se o valor passado no input porcentagem é válido, se não for atualiza o valor do input para 0, se for concatena o valor com % e atualiza o state percentage
+  function checkPercentage(e: any) {
     e.target.type = "text";
     if (percentage > 100) {
       e.target.value = "0%";
-      return limpResponse();
     }
     if (percentage < 1) {
       e.target.value = "0%";
-      return limpResponse();
     }
     setPercentage(String(percentage) + "%");
   }
 
-  async function getResponse() {
+  // handleDays: atualiza o state days com o valor do input
+  function handleDays(e: any) {
+    return setDays(e.target.value);
+  }
+
+  // getResponse: formata os valores dos inputs para o formato correto da requisição, verifica se os inputs possuem valores válidos, se válidos envia a requisição, senão atualiza os valores dos states para default (keys: ["1", "15", "30", "90"]; values: ["R$ 0,00", "R$ 0,00", "R$ 0,00", "R$ 0,00"])
+  function getResponse() {
     let getValue = currency;
     if (typeof getValue == "string") {
       getValue = getValue.replace("R$", "");
@@ -112,48 +113,41 @@ export function DivBody() {
     let getParcel = parcel;
 
     if (getParcel > 0 && getValue > 0 && getPercentage > 0) {
-      axios
-        .post("https://frontend-challenge-7bu3nxh76a-uc.a.run.app", {
-          amount: getValue,
-          installments: parcel,
-          mdr: getPercentage,
-        })
-        .then(function (response) {
-          let first = response.data[1];
-          let fifTeenth = response.data[15];
-          let thirtieth = response.data[30];
-          let ninetieth = response.data[90];
-          setFirstDay(
-            first.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })
-          );
-          setFifTeenthDay(
-            fifTeenth.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })
-          );
-          setThirtiethDay(
-            thirtieth.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })
-          );
-          setNinetiethDay(
-            ninetieth.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })
-          );
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    } else {
-      limpResponse();
+      if (!days) {
+        axios
+          .post("https://frontend-challenge-7bu3nxh76a-uc.a.run.app", {
+            amount: getValue,
+            installments: parcel,
+            mdr: getPercentage,
+          })
+          .then(function (response) {
+            setKeys(Object.keys(response.data));
+            setValues(Object.values(response.data));
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      }
+      if (days) {
+        let daysValue = days.split(",");
+        axios
+          .post("https://frontend-challenge-7bu3nxh76a-uc.a.run.app", {
+            amount: getValue,
+            installments: parcel,
+            mdr: getPercentage,
+            days: daysValue,
+          })
+          .then(function (response) {
+            setKeys(Object.keys(response.data));
+            setValues(Object.values(response.data));
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      }
     }
+    setKeys(["1", "15", "30", "90"]);
+    setValues(["R$ 0,00", "R$ 0,00", "R$ 0,00", "R$ 0,00"]);
   }
 
   return (
@@ -168,16 +162,12 @@ export function DivBody() {
         checkParcel={checkParcel}
         percentage={percentage}
         limpPercentage={limpPercentage}
-        handlePercetage={handlePercetage}
-        checkPercetage={checkPercetage}
-        limpResponse={limpResponse}
+        handlePercentage={handlePercentage}
+        checkPercentage={checkPercentage}
+        handleDays={handleDays}
+        days={days}
       />
-      <DivResponseComponent
-        firstDay={firstDay}
-        fifTeenthDay={fifTeenthDay}
-        thirtiethDay={thirtiethDay}
-        ninetiethDay={ninetiethDay}
-      />
+      <DivResponseComponent keys={keys} values={values} />
     </DivCard>
   );
 }
