@@ -22,8 +22,8 @@ export const DivCard = styled.div`
   display: flex;
   flex-direction: row;
   width: 66vw;
-  height: 69vh;
-  overflow: hidden;
+  overflow: auto;
+  margin: 10px;
 `;
 
 export const DivRequest = styled.div`
@@ -33,6 +33,7 @@ export const DivRequest = styled.div`
   align-items: center;
   background: white;
   width: 55%;
+  padding: 0cm 15px;
   border-radius: 6px 0 0 6px;
   border-top: #d7e1e7 solid 2px;
   border-left: #d7e1e7 solid 2px;
@@ -49,7 +50,7 @@ export const DivResponse = styled.div`
   align-items: center;
   background: var(--background);
   width: 45%;
-  padding: 30px 0;
+  padding: 30px 14px;
   border-radius: 0 6px 6px 0;
   border-top: #d7e1e7 solid 2px;
   border-right: #d7e1e7 solid 2px;
@@ -65,20 +66,24 @@ export const DivResponse = styled.div`
     text-align: center;
     font-style: italic;
     box-shadow: 0 1.5px #e7eff8;
-    width: 13em;
+    width: 98%;
 
-    @media (min-width: 885px) {
+    @media (min-width: 1050px) {
       font-size: calc(10px + 1vmin);
     }
 
-    @media (min-width: 1080px) {
+    @media (min-width: 1192px) {
       font-size: calc(12px + 1vmin);
     }
   }
 
-  div {
-    max-width: 12em;
-    min-width: 6em;
+  #divPai {
+    display: grid;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: auto;
   }
 `;
 
@@ -145,11 +150,16 @@ export const Form = styled.form`
   }
 
   p {
-    margin-top: -10px;
-    margin-bottom: 10px;
     font-size: 0.6em;
     color: #d7d7d7;
     font-weight: 500;
+    width: 92%;
+    margin-top: 0cm;
+    text-align: center;
+    @media (min-width: 888px) {
+      text-align: start;
+      width: auto;
+    }
   }
 `;
 
