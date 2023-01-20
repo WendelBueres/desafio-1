@@ -1,5 +1,5 @@
 import "./App.css";
-import { DivBody } from "./components/DivBody";
+import { DivBody } from "./components/DivBodyComponent";
 
 function App() {
   return (
