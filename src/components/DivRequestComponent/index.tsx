@@ -1,19 +1,20 @@
 import { DivRequest, Form, InputText, Label } from "../../styles/global";
 
-interface InterfaceDivRequestComponent {
-  handleCurrency: any;
+// Interface (tipagem) das props.children de DivRequestComponent
+interface IDivRequestComponent {
   currency: string | number;
-  limpCurrency: any;
-  formatCurrency: any;
-  handleParcel: any;
   parcel: number;
-  checkParcel: any;
   percentage: string | number;
   days?: string | undefined;
-  limpPercentage: any;
-  handlePercentage: any;
-  checkPercentage: any;
-  handleDays: any;
+  handleCurrency: (e: React.BaseSyntheticEvent) => void;
+  limpCurrency: (e: React.BaseSyntheticEvent) => void;
+  formatCurrency: (e: React.BaseSyntheticEvent) => void;
+  handleParcel: (e: React.BaseSyntheticEvent) => void;
+  checkParcel: () => void;
+  limpPercentage: (e: React.BaseSyntheticEvent) => void;
+  handlePercentage: (e: React.BaseSyntheticEvent) => void;
+  checkPercentage: (e: React.BaseSyntheticEvent) => void;
+  handleDays: (e: React.BaseSyntheticEvent) => void;
 }
 
 export function DivRequestComponent({
@@ -30,7 +31,7 @@ export function DivRequestComponent({
   checkPercentage,
   handleDays,
   days,
-}: InterfaceDivRequestComponent) {
+}: IDivRequestComponent) {
   return (
     <DivRequest>
       <Form>

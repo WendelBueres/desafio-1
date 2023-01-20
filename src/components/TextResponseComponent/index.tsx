@@ -1,6 +1,7 @@
 import { TextResponse } from "../../styles/global";
 
-interface InterfaceTextResponseComponent {
+// Interface (tipagem) das props.children de TextResponseComponent
+interface ITextResponseComponent {
   title: string;
   value: string | number;
 }
@@ -8,7 +9,7 @@ interface InterfaceTextResponseComponent {
 export function TextResponseComponent({
   title,
   value,
-}: InterfaceTextResponseComponent) {
+}: ITextResponseComponent) {
   return (
     <TextResponse>
       <p>{title}</p>

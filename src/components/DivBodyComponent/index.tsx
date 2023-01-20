@@ -1,16 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { DivCard } from "../../styles/global";
-import { DivRequestComponent } from "../DivRequest";
-import { DivResponseComponent } from "../DivResponse";
+import { DivRequestComponent } from "../DivRequestComponent";
+import { DivResponseComponent } from "../DivResponseComponent";
 
 export function DivBody() {
   const [currency, setCurrency] = useState<string | number>(0);
   const [parcel, setParcel] = useState(1);
   const [percentage, setPercentage] = useState<string | number>(0);
-  const [keys, setKeys] = useState<string[]>();
-  const [values, setValues] = useState<string[]>();
   const [days, setDays] = useState<string>();
+  const [keys, setKeys] = useState<string[]>(["1", "15", "30", "90"]);
+  const [values, setValues] = useState<number[]>([0.0, 0.0, 0.0, 0.0]);
 
   // useEffect: Se currency, parcel, percentage ou days sofrerem alteração a função GetResponse será executada
   useEffect(() => {
@@ -18,7 +18,7 @@ export function DivBody() {
   }, [currency, parcel, percentage, days]);
 
   // limpCurrency: limpa o input e passa condigurações de mínimo, máximo e tipo do input, posteriormente atualiza o valor do state currency
-  function limpCurrency(e: any) {
+  function limpCurrency(e: React.BaseSyntheticEvent) {
     e.target.type = "number";
     e.target.min = 0;
     e.target.max = 100000000;
@@ -27,12 +27,12 @@ export function DivBody() {
   }
 
   // handleCurrency: atualiza o state com o valor atual do input
-  function handleCurrency(e: any) {
+  function handleCurrency(e: React.BaseSyntheticEvent) {
     return setCurrency(e.target.value);
   }
 
   // formatCurrency: checa se valores do input valor são válidos, se não forem muda o valor do input para 0, se forem formata o valor do input para a moeda BRL(Real), por fim atualiza o valor do state currency
-  function formatCurrency(e: any) {
+  function formatCurrency(e: React.BaseSyntheticEvent) {
     if (currency < 1000) {
       e.target.value = 0;
     }
@@ -51,12 +51,12 @@ export function DivBody() {
   }
 
   // handleParcel: atualiza o valor do state parcel
-  function handleParcel(e: any) {
+  function handleParcel(e: React.BaseSyntheticEvent) {
     return setParcel(e.target.value);
   }
 
   // checkParcel: verifica se o valor do input de parcela é válido, se não for atualiza o state parcel para 0
-  function checkParcel(e: any) {
+  function checkParcel() {
     if (parcel > 12) {
       setParcel(0);
     }
@@ -66,7 +66,7 @@ export function DivBody() {
   }
 
   // limpPercentage: muda o tipo do input para number, passa configurações de mínimo e máximo, limpa o valor do input, por fim atualiza o state percentage
-  function limpPercentage(e: any) {
+  function limpPercentage(e: React.BaseSyntheticEvent) {
     e.target.type = "number";
     e.target.min = 1;
     e.target.max = 100;
@@ -75,12 +75,12 @@ export function DivBody() {
   }
 
   // handlePercentage: atualiza o valor do state percentage com o valor do input
-  function handlePercentage(e: any) {
+  function handlePercentage(e: React.BaseSyntheticEvent) {
     return setPercentage(e.target.value);
   }
 
   // checkPercentage: verifica se o valor passado no input porcentagem é válido, se não for atualiza o valor do input para 0, se for concatena o valor com % e atualiza o state percentage
-  function checkPercentage(e: any) {
+  function checkPercentage(e: React.BaseSyntheticEvent) {
     e.target.type = "text";
     if (percentage > 100) {
       e.target.value = "0%";
@@ -92,7 +92,7 @@ export function DivBody() {
   }
 
   // handleDays: atualiza o state days com o valor do input
-  function handleDays(e: any) {
+  function handleDays(e: React.BaseSyntheticEvent) {
     return setDays(e.target.value);
   }
 
@@ -112,7 +112,9 @@ export function DivBody() {
 
     let getParcel = parcel;
 
+    // se parcela, valor e porcentagem forem maior que 0, então:
     if (getParcel > 0 && getValue > 0 && getPercentage > 0) {
+      // verifica se existe valor em dias, se não existir, faz a requisição sem passar o parâmetro days para a API.
       if (!days) {
         axios
           .post("https://frontend-challenge-7bu3nxh76a-uc.a.run.app", {
@@ -120,14 +122,17 @@ export function DivBody() {
             installments: parcel,
             mdr: getPercentage,
           })
+          // em caso de sucesso atualiza os states values e keys
           .then(function (response) {
             setKeys(Object.keys(response.data));
             setValues(Object.values(response.data));
           })
+          // em caso de erro imprime erro console
           .catch(function (error) {
             console.error(error);
           });
       }
+      // verifica se existe valor em dias, se existir faz a requisição passando o parâmetro days para a API
       if (days) {
         let daysValue = days.split(",");
         axios
@@ -137,17 +142,20 @@ export function DivBody() {
             mdr: getPercentage,
             days: daysValue,
           })
+          // em caso de sucesso atualiza os states values e keys
           .then(function (response) {
             setKeys(Object.keys(response.data));
             setValues(Object.values(response.data));
           })
+          // em caso de erro imprime erro console
           .catch(function (error) {
             console.error(error);
           });
       }
     }
+    // se parcela, valor ou porcentagem forem menor que 0, atualiza states keys e values para valores padrões
     setKeys(["1", "15", "30", "90"]);
-    setValues(["R$ 0,00", "R$ 0,00", "R$ 0,00", "R$ 0,00"]);
+    setValues([0.0, 0.0, 0.0, 0.0]);
   }
 
   return (
